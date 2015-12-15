@@ -17,31 +17,58 @@
 </head>
 <body>
 
-    <div class="container text-center">
-        <div class="row">
-            <div class="col-md-4 ">
-                <div>CT Score</div>
-                <div id="ctScore"></div>
-            </div>
-            <div class="col-md-4">
-                <div>Round</div>
-                <div id="round"></div>
-            </div>
-            <div class="col-md-4">
-                <div>T</div>
-                <div id="tScore"></div>
-            </div>
-        </div>
-        <div class="row">
-
-            <div class="col-md-3">
-                Bomb: <span id="bomb"></span>
-            </div>
-            <div class="col-md-3">
-                RoundTime: <span id="roundTime"></span>
-            </div>
+<div class="container text-center">
+    <div class="row">
+        <div class="col-md-12">
+            RoundTime: <span id="roundTime"></span>
         </div>
     </div>
+    <div class="row">
+        <div class="col-md-4 ">
+            <div>CT</div>
+            <div id="ctScore"></div>
+        </div>
+        <div class="col-md-4">
+            <div>Round</div>
+            <div id="round"></div>
+        </div>
+        <div class="col-md-4">
+            <div>T</div>
+            <div id="tScore"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            Bomb: <span id="bomb"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <span id="bombTime"></span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div id="username"></div>
+            <div>Kills: <span id="killCount"></span></div>
+            <div>Assists: <span id="assistCount"></span></div>
+            <div>Deaths: <span id="deathCount"></span></div>
+            <div>MVP: <span id="mvpCount"></span></div>
+            <div>Score: <span id="scoreCount"></span></div>
+        </div>
+
+        <div class="col-md-4">
+
+        </div>
+
+        <div class="col-md-4">
+            <div>Health: <span id="health"></span></div>
+            <div>Armor: <span id="armor"></span></div>
+            <div>Money: <span id="money"></span></div>
+        </div>
+    </div>
+</div>
 
 
 
@@ -83,6 +110,19 @@
                     $('#ctScore').html(payload.map.team_ct.score);
                     $('#tScore').html(payload.map.team_t.score);
 
+                    $('#bomb').html(payload.round.bomb);
+
+                    $('#killCount').html(payload.player.match_stats.kills);
+                    $('#deathCount').html(payload.player.match_stats.deaths);
+                    $('#assistCount').html(payload.player.match_stats.assists);
+                    $('#mvpCount').html(payload.player.match_stats.mvps);
+                    $('#scoreCount').html(payload.player.match_stats.score);
+                    $('#username').html(payload.player.name);
+
+                    $('#health').html(payload.player.state.health);
+                    $('#armor').html(payload.player.state.armor);
+                    $('#money').html(payload.player.state.money);
+
                     if (!(round.phase === payload.round.phase)) {
                         round.timestart = payload.provider.timestamp;
                         round.phase = payload.round.phase;
@@ -107,7 +147,8 @@
                     }
 
                     if (round.bomb.planted) {
-                        round.bomb.time = 40 - (new Date().getTime() / 1000 - round.bomb.timestart);
+                        round.bomb.time = bombTime - (new Date().getTime() / 1000 - round.bomb.timestart);
+                        $('#bombTime').html(round.bomb.time);
                     }
 
                     payload.extra = {};
