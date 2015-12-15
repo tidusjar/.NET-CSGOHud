@@ -68,6 +68,13 @@
             <div>Money: <span id="money"></span></div>
         </div>
     </div>
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            <div id="primaryWep"></div>
+        </div>
+    </div>
 </div>
 
 
@@ -123,40 +130,10 @@
                     $('#armor').html(payload.player.state.armor);
                     $('#money').html(payload.player.state.money);
 
-                    if (!(round.phase === payload.round.phase)) {
-                        round.timestart = payload.provider.timestamp;
-                        round.phase = payload.round.phase;
-                    }
+                    $('#primaryWep').html(payload.player.weapons.weapon0.name);
 
-                    var maxTime = 0;
-                    if (payload.round.phase === 'live') {
-                        maxTime = 115;
-                    } else if (round.phase === 'freezetime') {
-                        maxTime = 15;
-                    } else {
-                        maxTime = 7;
-                    }
-                    round.time = maxTime - (new Date().getTime() / 1000 - round.timestart);
-                    round.maxTime = maxTime;
+                    workoutRoundTime(payload);
 
-                    if (!round.bomb.planted && payload.round.bomb === 'planted') {
-                        round.bomb.planted = true;
-                        round.bomb.timestart = payload.provider.timestamp;
-                    } else if (round.bomb.planted && payload.round.bomb !== 'planted') {
-                        round.bomb.planted = false;
-                    }
-
-                    if (round.bomb.planted) {
-                        round.bomb.time = bombTime - (new Date().getTime() / 1000 - round.bomb.timestart);
-                        $('#bombTime').html(round.bomb.time);
-                    }
-
-                    payload.extra = {};
-                    payload.extra.round = round;
-
-                    round.time = maxTime - (new Date().getTime() / 1000 - payload.provider.timestamp);
-
-                    $('#roundTime').html(round.time);
                 }
             };
 
@@ -165,6 +142,46 @@
                 console.log("Hub started successfully");
             });
 
+
+        function workoutRoundTime(payload) {
+
+            if (!(round.phase === payload.round.phase)) {
+                round.timestart = payload.provider.timestamp;
+                round.phase = payload.round.phase;
+            }
+            console.log(payload.provider.timestamp);
+
+            var maxTime = 0;
+            if (payload.round.phase === 'live') {
+                maxTime = 115;
+            } else if (payload.round.phase === 'freezetime') {
+                maxTime = 15;
+            } else {
+                maxTime = 7;
+            }
+            round.time = maxTime - (new Date().getTime() / 1000 - round.timestart);
+            round.maxTime = maxTime;
+
+            if (!round.bomb.planted && payload.round.bomb === 'planted') {
+                round.bomb.planted = true;
+                round.bomb.timestart = payload.provider.timestamp;
+            } else if (round.bomb.planted && payload.round.bomb !== 'planted') {
+                round.bomb.planted = false;
+                $('#bombTime').html("");
+            }
+
+            if (round.bomb.planted) {
+                round.bomb.time = bombTime - (new Date().getTime() / 1000 - round.bomb.timestart);
+                $('#bombTime').html(Math.round(round.bomb.time));
+            }
+
+            payload.extra = {};
+            payload.extra.round = round;
+
+            round.time = maxTime - (new Date().getTime() / 1000 - payload.provider.timestamp);
+            console.log(round.time);
+            $('#roundTime').html(Math.round(round.time));
+        }
 
     </script>
 </body>
